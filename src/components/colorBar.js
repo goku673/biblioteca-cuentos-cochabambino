@@ -1,15 +1,21 @@
 import React from 'react';
 
-const ColorPalette = ({ colors }) => {
-  const gradient = colors.join(', '); // une los colores con una coma
+const ColorPalette = ({ colors, className = "" }) => {
+  if (!colors || colors.length === 0) {
+    return null;
+  }
+
+  const gradient = colors.join(', ');
 
   return (
-    <div className="flex items-center">
-      <div className="h-1 py-0.5 px-0.5 w-16 mr-2 rounded overflow-hidden" style={{
-        background: `linear-gradient(90deg, ${gradient})` // aplica el gradiente
-      }}>
-                             
-      </div>
+    <div className={`flex items-center ${className}`}>
+      <div 
+        className="rounded-md shadow-sm border transition-all duration-200 hover:shadow-md"
+        style={{
+          background: `linear-gradient(90deg, ${gradient})`
+        }}
+        title={`Colores: ${colors.join(', ')}`}
+      />
     </div>
   );
 };
