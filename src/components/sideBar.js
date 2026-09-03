@@ -1,14 +1,16 @@
 'use client'
 
-import React, { useState } from 'react';
-import Link from 'next/link';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import { IoHomeSharp } from "react-icons/io5";
-import ColorPalette from './colorBar';
-const Sidebar = ({ data }) => {
+import { TOTAL_PROVINCES } from '@/lib/readingProgress';
+
+const Sidebar = ({ data, activeProvince, onActiveProvince, completedProvinceIds = [] }) => {
     const router = useRouter();
+    const completedSet = new Set(completedProvinceIds);
+    const progressPercentage = Math.round((completedSet.size / TOTAL_PROVINCES) * 100);
     
-    const handleClickGoBack = (id) => {
+    const handleClickGoBack = () => {
         router.push('/');
     };
 
@@ -17,6 +19,16 @@ const Sidebar = ({ data }) => {
             <div style={styles.header}>
                 <h1 style={styles.sidebarTitle}>🗺️ Provincias</h1>
                 <div style={styles.titleUnderline}></div>
+                <div className="journey-progress" aria-label={`${completedSet.size} de ${TOTAL_PROVINCES} provincias completadas`}>
+                    <div className="journey-progress__heading">
+                        <span>Mi recorrido</span>
+                        <strong>{completedSet.size}/{TOTAL_PROVINCES} ⭐</strong>
+                    </div>
+                    <div className="journey-progress__track" aria-hidden="true">
+                        <span style={{ width: `${progressPercentage}%` }} />
+                    </div>
+                    <p>{completedSet.size === TOTAL_PROVINCES ? '¡Exploraste toda Cochabamba!' : 'Lee cuentos y colecciona estrellas'}</p>
+                </div>
             </div>
             
             <div style={styles.scrollContainer}>
@@ -24,31 +36,28 @@ const Sidebar = ({ data }) => {
                     {data.map((prov, index) => (
                         <li 
                             key={prov.id} 
+                            className={activeProvince?.id === prov.id ? 'province-nav-item is-active' : 'province-nav-item'}
                             style={{
                                 ...styles.provinceItem,
+                                ...(activeProvince?.id === prov.id ? styles.provinceItemActive : {}),
                                 animationDelay: `${index * 0.1}s`
                             }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateX(8px)';
-                                e.currentTarget.style.backgroundColor = 'rgba(10, 189, 198, 0.08)';
-                                e.currentTarget.style.borderLeft = '4px solid #0abdc6';
-                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(10, 189, 198, 0.15)';
-                                const link = e.currentTarget.querySelector('a');
-                                if (link) link.style.color = '#ff6b6b';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'translateX(0)';
-                                e.currentTarget.style.backgroundColor = 'transparent';
-                                e.currentTarget.style.borderLeft = '4px solid transparent';
-                                e.currentTarget.style.boxShadow = 'none';
-                                const link = e.currentTarget.querySelector('a');
-                                if (link) link.style.color = '#0abdc6';
-                            }}
+                            onMouseEnterCapture={() => onActiveProvince?.(prov)}
+                            onFocusCapture={() => onActiveProvince?.(prov)}
+                            onTouchStart={() => onActiveProvince?.(prov)}
                         >
-                            <Link href={`/mapaProvincia/mitoLeyenda/${prov.id}`} style={styles.sidebarLink}>
+                            <button
+                                type="button"
+                                aria-pressed={activeProvince?.id === prov.id}
+                                onClick={() => onActiveProvince?.(prov)}
+                                style={styles.sidebarLink}
+                            >
                                 <span style={styles.provinceName}>{prov.province}</span>
-                            </Link>
+                            </button>
                             <div style={styles.colorBar}>
+                                {completedSet.has(prov.id) && (
+                                    <span className="province-completed-star" title="Cuento completado" aria-label="Cuento completado">★</span>
+                                )}
                                 {prov.colors.map((color, colorIndex) => (
                                     <div
                                         key={colorIndex}
@@ -170,10 +179,21 @@ const styles = {
         animation: 'fadeInUp 0.6s ease-out both',
         cursor: 'pointer',
     },
+    provinceItemActive: {
+        transform: 'translateX(8px)',
+        backgroundColor: 'rgba(10, 127, 140, 0.1)',
+        borderLeft: '4px solid #087f8c',
+        boxShadow: '0 4px 14px rgba(8, 127, 140, 0.16)',
+    },
     sidebarLink: {
-        textDecoration: 'none',
         flex: '1',
         marginRight: '16px',
+        padding: '8px 0',
+        border: 'none',
+        background: 'transparent',
+        textAlign: 'left',
+        font: 'inherit',
+        cursor: 'pointer',
     },
     provinceName: {
         color: '#0abdc6',

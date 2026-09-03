@@ -2,110 +2,58 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import Sidebar from '@/components/sideBar';
+import fallbackMap from '@/app/img/mapa.png';
+import { provinceColors } from '@/data/provinceColors';
+import {
+  getCompletedProvinceIds,
+  READING_PROGRESS_EVENT,
+} from '@/lib/readingProgress';
+
+const provincePositions = {
+  1: { x: 43, y: 50 },
+  2: { x: 30, y: 28 },
+  3: { x: 28, y: 62 },
+  4: { x: 31, y: 73 },
+  5: { x: 28, y: 82 },
+  6: { x: 36, y: 44 },
+  7: { x: 45, y: 58 },
+  8: { x: 47, y: 66 },
+  9: { x: 70, y: 85 },
+  10: { x: 74, y: 54 },
+  11: { x: 57, y: 50 },
+  12: { x: 55, y: 76 },
+  13: { x: 43, y: 75 },
+  14: { x: 51, y: 34 },
+  15: { x: 39, y: 62 },
+  16: { x: 55, y: 62 },
+};
 
 const Mapa = () => {
-  const [dataColors, setDataColors] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [activeProvince, setActiveProvince] = useState(
+    () => provinceColors.find((province) => province.id === 6) || provinceColors[0]
+  );
+  const [completedProvinceIds, setCompletedProvinceIds] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/colors');
-        
-        if (!response.ok) {
-          throw new Error('Error al cargar los datos');
-        }
-        
-        const data = await response.json();
-        setDataColors(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Error desconocido');
-      } finally {
-        setLoading(false);
-      }
+    const syncProgress = (event) => {
+      setCompletedProvinceIds(event?.detail || getCompletedProvinceIds());
     };
 
-    fetchData();
+    syncProgress();
+    window.addEventListener(READING_PROGRESS_EVENT, syncProgress);
+    window.addEventListener('storage', syncProgress);
+
+    return () => {
+      window.removeEventListener(READING_PROGRESS_EVENT, syncProgress);
+      window.removeEventListener('storage', syncProgress);
+    };
   }, []);
 
-  const imgcbba = 'https://firebasestorage.googleapis.com/v0/b/red-conexia.appspot.com/o/MAPA%20F%20CBBA.png?alt=media&token=7b3d1c00-a211-48d7-b2c0-acb4c0ff0fc4';
+  const imgcbba = '/images/mapa-cochabamba.webp';
 
   const styles = {
-    // Loading styles
-    loadingContainer: {
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '100vh',
-      background: 'linear-gradient(135deg, #0abdc6 0%, #ff6b6b 50%, #ffa500 100%)',
-    },
-    loadingContent: {
-      textAlign: 'center',
-      color: 'white',
-      animation: 'fadeIn 0.5s ease-out',
-    },
-    spinner: {
-      width: '60px',
-      height: '60px',
-      border: '6px solid rgba(255,255,255,0.3)',
-      borderTop: '6px solid white',
-      borderRadius: '50%',
-      animation: 'spin 1s linear infinite',
-      margin: '0 auto 20px',
-    },
-    loadingText: {
-      fontSize: '18px',
-      fontWeight: '600',
-      margin: 0,
-      textShadow: '0 2px 4px rgba(0,0,0,0.3)',
-    },
-
-    // Error styles
-    errorContainer: {
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '100vh',
-      background: 'linear-gradient(135deg, #0abdc6 0%, #ff6b6b 50%, #ffa500 100%)',
-    },
-    errorContent: {
-      textAlign: 'center',
-      backgroundColor: 'rgba(255,255,255,0.95)',
-      backdropFilter: 'blur(20px)',
-      padding: '40px',
-      borderRadius: '20px',
-      boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
-      maxWidth: '400px',
-      margin: '20px',
-    },
-    errorTitle: {
-      color: '#ff6b6b',
-      fontSize: '24px',
-      fontWeight: 'bold',
-      marginBottom: '16px',
-    },
-    errorText: {
-      color: '#4b5563',
-      fontSize: '16px',
-      marginBottom: '24px',
-      lineHeight: '1.5',
-    },
-    retryButton: {
-      backgroundColor: '#0abdc6',
-      color: 'white',
-      border: 'none',
-      padding: '12px 24px',
-      borderRadius: '50px',
-      fontSize: '16px',
-      fontWeight: 'bold',
-      cursor: 'pointer',
-      transition: 'all 0.3s ease',
-      boxShadow: '0 4px 15px rgba(10, 189, 198, 0.3)',
-    },
-
     // Main container
     container: {
       display: 'flex',
@@ -139,15 +87,17 @@ const Mapa = () => {
     mapContainer: {
       flex: '1',
       display: 'flex',
+      flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
+      gap: '14px',
       minHeight: '70vh',
     },
     mapWrapper: {
       position: 'relative',
       width: '100%',
       maxWidth: '800px',
-      height: '600px',
+      aspectRatio: '1 / 1',
       borderRadius: '24px',
       overflow: 'hidden',
       boxShadow: '0 25px 50px rgba(0,0,0,0.2), 0 10px 20px rgba(0,0,0,0.1)',
@@ -175,7 +125,7 @@ const Mapa = () => {
     },
     mapImage: {
       objectFit: 'contain',
-      padding: '20px',
+      padding: '12px',
       transition: 'transform 0.3s ease',
     },
     mapTitle: {
@@ -202,63 +152,60 @@ const Mapa = () => {
     },
   };
 
-  if (loading) {
-    return (
-      <div style={styles.loadingContainer}>
-        <div style={styles.loadingContent}>
-          <div style={styles.spinner}></div>
-          <p style={styles.loadingText}>Cargando mapa de Cochabamba...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div style={styles.errorContainer}>
-        <div style={styles.errorContent}>
-          <h2 style={styles.errorTitle}>⚠️ Error</h2>
-          <p style={styles.errorText}>{error}</p>
-          <button 
-            style={styles.retryButton}
-            onClick={() => window.location.reload()}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#ff6b6b';
-              e.target.style.transform = 'translateY(-2px)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = '#0abdc6';
-              e.target.style.transform = 'translateY(0)';
-            }}
-          >
-            Reintentar
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div style={styles.container}>
+    <div className="map-page" style={styles.container}>
       <div style={styles.backgroundOverlay}></div>
-      <div style={styles.contentWrapper}>
-        <Sidebar data={dataColors} />
-        <div style={styles.mapContainer}>
-          <div style={styles.mapWrapper}>
+      <div className="map-layout" style={styles.contentWrapper}>
+        <Sidebar
+          data={provinceColors}
+          activeProvince={activeProvince}
+          onActiveProvince={setActiveProvince}
+          completedProvinceIds={completedProvinceIds}
+        />
+        <div className="map-stage" style={styles.mapContainer}>
+          <div className="map-guide" role="note" aria-label="Cómo abrir un cuento">
+            <span className="map-guide__step">1</span>
+            <span><strong>Elige una provincia</strong> en la lista</span>
+            <span className="map-guide__arrow" aria-hidden="true">➜</span>
+            <span className="map-guide__step">2</span>
+            <span><strong>Presiona la banderita</strong> para entrar al cuento</span>
+          </div>
+          <div className="map-selection" aria-live="polite">
+            <span aria-hidden="true">📍</span>
+            Provincia elegida: <strong>{activeProvince?.province || 'ninguna'}</strong>
+          </div>
+          <div className="map-canvas" style={styles.mapWrapper}>
             <div style={styles.mapGlow}></div>
-            <div style={styles.imageContainer}>
+            <div className="map-image" style={styles.imageContainer}>
               <Image 
                 src={imgcbba || "/placeholder.svg"} 
                 alt="Mapa interactivo de las provincias de Cochabamba" 
                 fill
                 style={styles.mapImage}
                 priority
+                unoptimized
+                onError={(event) => {
+                  event.currentTarget.src = fallbackMap.src;
+                }}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 60vw"
               />
-            </div>
-            <div style={styles.mapTitle}>
-              <h2 style={styles.titleText}>Mapa de Cochabamba</h2>
-              <p style={styles.subtitleText}>Explora las provincias y sus tradiciones</p>
+              {activeProvince && provincePositions[activeProvince.id] && (
+                <Link
+                  href={`/mapaProvincia/mitoLeyenda/${activeProvince.id}`}
+                  className="map-marker"
+                  style={{
+                    left: `${provincePositions[activeProvince.id].x}%`,
+                    top: `${provincePositions[activeProvince.id].y}%`,
+                    '--marker-color': activeProvince.colors?.[0] || '#e84a3c',
+                  }}
+                  aria-label={`Abrir el cuento de ${activeProvince.province}`}
+                  title={`Leer el cuento de ${activeProvince.province}`}
+                >
+                  <span className="map-marker__halo" aria-hidden="true" />
+                  <span className="map-marker__flag" aria-hidden="true">🚩</span>
+                  <span className="map-marker__label">{activeProvince.province}</span>
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -266,90 +213,5 @@ const Mapa = () => {
     </div>
   );
 };
-
-// Add CSS animations
-if (typeof document !== 'undefined') {
-  const styleSheet = document.createElement("style");
-  styleSheet.type = "text/css";
-  styleSheet.innerText = `
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    
-    @keyframes fadeInScale {
-      from {
-        opacity: 0;
-        transform: scale(0.9) translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
-    }
-    
-    @keyframes rotateGlow {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
-    /* Responsive styles */
-    @media (max-width: 1024px) {
-      .contentWrapper {
-        flex-direction: column !important;
-        align-items: center !important;
-      }
-      
-      .mapWrapper {
-        width: 100% !important;
-        height: 500px !important;
-        max-width: 600px !important;
-      }
-    }
-    
-    @media (max-width: 768px) {
-      .container {
-        padding: 16px !important;
-      }
-      
-      .mapWrapper {
-        height: 400px !important;
-        border-radius: 16px !important;
-      }
-      
-      .mapGlow {
-        border-radius: 20px !important;
-      }
-      
-      .titleText {
-        font-size: 20px !important;
-      }
-      
-      .subtitleText {
-        font-size: 14px !important;
-      }
-    }
-    
-    @media (max-width: 640px) {
-      .contentWrapper {
-        gap: 16px !important;
-      }
-      
-      .mapWrapper {
-        height: 350px !important;
-      }
-      
-      .mapTitle {
-        padding: 20px 16px 16px !important;
-      }
-    }
-  `;
-  document.head.appendChild(styleSheet);
-}
 
 export default Mapa;

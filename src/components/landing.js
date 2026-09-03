@@ -1,26 +1,31 @@
 'use client'
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 const LandingPage = () => {
   const router = useRouter();
+
+  useEffect(() => {
+    router.prefetch('/mapaProvincia/mitoLeyenda');
+  }, [router]);
 
   const handleEnter = () => {
     router.push('/mapaProvincia/mitoLeyenda');
   };
 
   return (
-    <div style={styles.landingContainer}>
+    <div className="landing-page" style={styles.landingContainer}>
       {/* Elementos decorativos de fondo */}
       <div style={styles.backgroundOverlay}></div>
       <div style={styles.floatingElement1}></div>
       <div style={styles.floatingElement2}></div>
       <div style={styles.floatingElement3}></div>
       
-      <div style={styles.contentWrapper}>
+      <div className="landing-content" style={styles.contentWrapper}>
         {/* Hero Section */}
-        <div style={styles.heroSection}>
+        <div className="landing-hero" style={styles.heroSection}>
           <div style={styles.iconContainer}>
             <span style={styles.bookIcon}>📚</span>
             <span style={styles.heartIcon}>❤️</span>
@@ -58,12 +63,17 @@ const LandingPage = () => {
         </div>
 
         {/* Images Section */}
-        <div style={styles.imageSection}>
+        <div className="landing-images" style={styles.imageSection}>
           <div style={styles.imageContainer}>
             <div style={styles.imageWrapper}>
-              <img
-                src="https://firebasestorage.googleapis.com/v0/b/red-conexia.appspot.com/o/landing.jpeg?alt=media&token=7df86399-3e6f-4d70-8786-fc2625ee93b8"
+              <Image
+                src="/images/portada-cultura.webp"
                 alt="Tradiciones cochabambinas - Cultura ancestral"
+                width={1200}
+                height={675}
+                sizes="(max-width: 700px) 100vw, 45vw"
+                priority
+                unoptimized
                 style={styles.landingImage}
                 onMouseEnter={(e) => {
                   e.target.style.transform = 'scale(1.05) rotate(1deg)';
@@ -82,9 +92,14 @@ const LandingPage = () => {
 
           <div style={styles.imageContainer}>
             <div style={styles.imageWrapper}>
-              <img
-                src="https://firebasestorage.googleapis.com/v0/b/red-conexia.appspot.com/o/landing2.jfif?alt=media&token=91849a26-e163-467d-bda7-c172d1cc8dce"
+              <Image
+                src="/images/portada-tradiciones.webp"
                 alt="Tradiciones cochabambinas - Patrimonio cultural"
+                width={1200}
+                height={675}
+                sizes="(max-width: 700px) 100vw, 45vw"
+                loading="lazy"
+                unoptimized
                 style={styles.landingImage}
                 onMouseEnter={(e) => {
                   e.target.style.transform = 'scale(1.05) rotate(-1deg)';
@@ -103,7 +118,7 @@ const LandingPage = () => {
         </div>
 
         {/* Features Section */}
-        <div style={styles.featuresSection}>
+        <div className="landing-features" style={styles.featuresSection}>
           <div 
             style={styles.featureCard}
             onMouseEnter={(e) => {
