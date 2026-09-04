@@ -1,10 +1,27 @@
 'use client'
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { IoArrowBackSharp } from "react-icons/io5";
-import { completeProvince, getCompletedProvinceIds } from '@/lib/readingProgress';
+import {
+    completeProvince,
+    getCompletedProvinceIds,
+    TOTAL_PROVINCES,
+} from '@/lib/readingProgress';
+
+const CONFETTI_PIECES = [
+    { x: '8%', color: '#ff6b6b', delay: '0s' },
+    { x: '17%', color: '#ffd447', delay: '.12s' },
+    { x: '27%', color: '#0abdc6', delay: '.04s' },
+    { x: '38%', color: '#8b5cf6', delay: '.18s' },
+    { x: '48%', color: '#34d399', delay: '.08s' },
+    { x: '58%', color: '#ff8c42', delay: '.22s' },
+    { x: '68%', color: '#ef476f', delay: '.02s' },
+    { x: '78%', color: '#06d6a0', delay: '.16s' },
+    { x: '88%', color: '#3b82f6', delay: '.1s' },
+    { x: '95%', color: '#f59e0b', delay: '.2s' },
+];
 
 const ProvinceReader = ({ dataProvinceId }) => {
     const id = dataProvinceId.id;
@@ -12,12 +29,33 @@ const ProvinceReader = ({ dataProvinceId }) => {
     const [questions, setQuestions] = useState(false);
     const [isCompleted, setIsCompleted] = useState(false);
     const [showCelebration, setShowCelebration] = useState(false);
+    const [completedCount, setCompletedCount] = useState(0);
+    const celebrationCloseButtonRef = useRef(null);
 
     useEffect(() => {
         setQuestions(false);
         setShowCelebration(false);
-        setIsCompleted(getCompletedProvinceIds().includes(Number(id)));
+        const completedIds = getCompletedProvinceIds();
+        setIsCompleted(completedIds.includes(Number(id)));
+        setCompletedCount(completedIds.length);
     }, [id]);
+
+    useEffect(() => {
+        if (!showCelebration) return undefined;
+
+        const previouslyFocusedElement = document.activeElement;
+        const handleEscape = (event) => {
+            if (event.key === 'Escape') setShowCelebration(false);
+        };
+
+        document.addEventListener('keydown', handleEscape);
+        celebrationCloseButtonRef.current?.focus();
+
+        return () => {
+            document.removeEventListener('keydown', handleEscape);
+            previouslyFocusedElement?.focus?.();
+        };
+    }, [showCelebration]);
 
     const toggleLanguage = () => {
         setIsQuechua((currentLanguage) => !currentLanguage);
@@ -28,10 +66,14 @@ const ProvinceReader = ({ dataProvinceId }) => {
     }
 
     const handleCompleteActivity = () => {
-        completeProvince(Number(id));
+        const completedIds = completeProvince(Number(id));
         setIsCompleted(true);
+        setCompletedCount(completedIds.length);
         setShowCelebration(true);
     };
+
+    const completedPercentage = Math.round((completedCount / TOTAL_PROVINCES) * 100);
+    const completedAllProvinces = completedCount === TOTAL_PROVINCES;
 
     return (
         <div className="province-page" style={styles.mainContainer}>
@@ -151,12 +193,6 @@ const ProvinceReader = ({ dataProvinceId }) => {
                                 </button>
                             </div>
                         </section>
-                        {showCelebration && (
-                            <div className="learning-celebration" role="status">
-                                <span aria-hidden="true">🎉</span>
-                                ¡Muy bien! Regresa al mapa para ver tu nueva estrella.
-                            </div>
-                        )}
                     </div>
 
                     {/* Image Container */}
@@ -179,6 +215,81 @@ const ProvinceReader = ({ dataProvinceId }) => {
                     )}
                 </div>
             </div>
+            {showCelebration && (
+                <div
+                    className="celebration-backdrop"
+                    onClick={() => setShowCelebration(false)}
+                >
+                    <section
+                        className="celebration-dialog"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="celebration-title"
+                        aria-describedby="celebration-message"
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <div className="celebration-confetti" aria-hidden="true">
+                            {CONFETTI_PIECES.map((piece, index) => (
+                                <span
+                                    key={index}
+                                    style={{
+                                        '--confetti-x': piece.x,
+                                        '--confetti-color': piece.color,
+                                        '--confetti-delay': piece.delay,
+                                    }}
+                                />
+                            ))}
+                        </div>
+                        <button
+                            ref={celebrationCloseButtonRef}
+                            type="button"
+                            className="celebration-close"
+                            aria-label="Cerrar felicitación"
+                            onClick={() => setShowCelebration(false)}
+                        >
+                            ×
+                        </button>
+
+                        <div className="celebration-trophy" aria-hidden="true">
+                            {completedAllProvinces ? '🏆' : '⭐'}
+                        </div>
+                        <p className="celebration-kicker">
+                            {completedAllProvinces ? '¡Recorrido completado!' : 'Allin ruwasqa · ¡Muy bien hecho!'}
+                        </p>
+                        <h2 id="celebration-title">
+                            {completedAllProvinces ? '¡Eres Guardián de los cuentos!' : '¡Excelente trabajo!'}
+                        </h2>
+                        <p id="celebration-message" className="celebration-message">
+                            {completedAllProvinces
+                                ? 'Conociste las 16 provincias y ayudaste a conservar sus historias. ¡Cochabamba está orgullosa de ti!'
+                                : `Ganaste la estrella de ${dataProvinceId.province}. Cada cuento que lees mantiene viva nuestra cultura.`}
+                        </p>
+
+                        <div className="celebration-progress" aria-label={`${completedCount} de ${TOTAL_PROVINCES} provincias completadas`}>
+                            <div className="celebration-progress__heading">
+                                <span>Mi recorrido por Cochabamba</span>
+                                <strong>{completedCount}/{TOTAL_PROVINCES} ⭐</strong>
+                            </div>
+                            <div className="celebration-progress__track" aria-hidden="true">
+                                <span style={{ width: `${completedPercentage}%` }} />
+                            </div>
+                        </div>
+
+                        <div className="celebration-actions">
+                            <Link href="/mapaProvincia/mitoLeyenda" className="celebration-primary-action">
+                                🗺️ {completedAllProvinces ? 'Ver mi mapa completo' : 'Explorar otra provincia'}
+                            </Link>
+                            <button
+                                type="button"
+                                className="celebration-secondary-action"
+                                onClick={() => setShowCelebration(false)}
+                            >
+                                Seguir leyendo
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            )}
         </div>
     );
 };

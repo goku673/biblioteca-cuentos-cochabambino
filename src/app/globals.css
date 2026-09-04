@@ -95,14 +95,43 @@ button:focus-visible, a:focus-visible { outline: 3px solid #f7b955; outline-offs
 .reader-question-card:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,.14) !important; }
 .reader-province-image:hover { transform: scale(1.025); }
 .reader-back-button:active, .reader-question-button:active { transform: translateY(0) scale(.98); }
-.learning-celebration { display: flex; align-items: center; gap: 10px; margin-top: -12px; padding: 13px 16px; border-radius: 14px; color: #624300; background: #fff2bb; font-weight: 800; animation: celebrationPop .45s ease-out; }
-.learning-celebration span { font-size: 25px; }
-@keyframes celebrationPop { from { opacity: 0; transform: scale(.94) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+.celebration-backdrop { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 18px; background: rgba(16,38,45,.68); animation: celebrationBackdropIn .2s ease-out; }
+.celebration-dialog { position: relative; width: min(100%, 540px); max-height: calc(100vh - 36px); overflow: auto; padding: 34px 32px 30px; border: 4px solid #fff; border-radius: 28px; color: #17324d; background: linear-gradient(155deg, #fffef7 0%, #fff4c3 55%, #dff8f5 100%); box-shadow: 0 28px 80px rgba(0,0,0,.34); text-align: center; animation: celebrationDialogIn .38s cubic-bezier(.2,.8,.2,1); }
+.celebration-close { position: absolute; top: 12px; right: 13px; z-index: 2; display: grid; place-items: center; width: 38px; height: 38px; border: 0; border-radius: 50%; color: #486065; background: rgba(255,255,255,.8); font: 800 27px/1 system-ui, sans-serif; cursor: pointer; transition: transform .16s ease, background-color .16s ease; }
+.celebration-close:hover { background: #fff; transform: rotate(7deg) scale(1.06); }
+.celebration-trophy { position: relative; z-index: 1; width: 108px; height: 108px; margin: 0 auto 12px; display: grid; place-items: center; border-radius: 50%; background: #fff; box-shadow: 0 10px 28px rgba(173,112,0,.2), 0 0 0 12px rgba(255,205,50,.18); font-size: 66px; animation: celebrationStarIn .55s .12s cubic-bezier(.2,.9,.3,1.25) both; }
+.celebration-kicker { margin: 19px 0 5px; color: #b15d00; font-size: 13px; font-weight: 900; letter-spacing: .07em; text-transform: uppercase; }
+.celebration-dialog h2 { margin: 0; color: #087f8c; font-size: clamp(1.65rem, 6vw, 2.2rem); line-height: 1.12; }
+.celebration-message { max-width: 440px; margin: 13px auto 20px; color: #52666c; font-size: 15px; line-height: 1.55; }
+.celebration-progress { padding: 14px 16px; border: 1px solid rgba(8,127,140,.17); border-radius: 16px; background: rgba(255,255,255,.72); text-align: left; }
+.celebration-progress__heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; font-size: 13px; font-weight: 800; }
+.celebration-progress__heading strong { flex: 0 0 auto; color: #a85a00; font-size: 15px; }
+.celebration-progress__track { height: 11px; margin-top: 10px; overflow: hidden; border-radius: 999px; background: #dcebea; }
+.celebration-progress__track span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #0abdc6, #f5b940, #e66b55); animation: celebrationProgressIn .7s .22s ease-out both; }
+.celebration-actions { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-top: 20px; }
+.celebration-primary-action, .celebration-secondary-action { min-height: 48px; display: flex; align-items: center; justify-content: center; padding: 11px 17px; border-radius: 14px; font: inherit; font-size: 14px; font-weight: 850; cursor: pointer; text-decoration: none; transition: transform .16s ease, box-shadow .16s ease, background-color .16s ease; }
+.celebration-primary-action { border: 0; color: #fff; background: #087f8c; box-shadow: 0 8px 18px rgba(8,127,140,.24); }
+.celebration-secondary-action { border: 2px solid rgba(8,127,140,.23); color: #08717b; background: rgba(255,255,255,.74); }
+.celebration-primary-action:hover, .celebration-secondary-action:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(23,50,77,.16); }
+.celebration-confetti { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; pointer-events: none; }
+.celebration-confetti span { position: absolute; top: -20px; left: var(--confetti-x); width: 9px; height: 20px; border-radius: 3px; background: var(--confetti-color); animation: confettiFall 1.2s var(--confetti-delay) cubic-bezier(.25,.6,.4,1) both; }
+@keyframes celebrationBackdropIn { from { opacity: 0; } }
+@keyframes celebrationDialogIn { from { opacity: 0; transform: translateY(20px) scale(.94); } }
+@keyframes celebrationStarIn { from { opacity: 0; transform: rotate(-18deg) scale(.45); } to { opacity: 1; transform: rotate(0) scale(1); } }
+@keyframes celebrationProgressIn { from { transform: scaleX(0); transform-origin: left; } to { transform: scaleX(1); transform-origin: left; } }
+@keyframes confettiFall { 0% { opacity: 0; transform: translateY(-12px) rotate(0); } 12% { opacity: 1; } 100% { opacity: 0; transform: translateY(420px) rotate(620deg); } }
 @media (max-width: 520px) {
   .learning-progress-card { align-items: flex-start; gap: 12px; padding: 16px; }
   .learning-progress-card__icon { font-size: 36px; }
   .learning-progress-card h2 { font-size: 18px; }
   .complete-activity-button { width: 100%; }
+  .celebration-backdrop { padding: 10px; }
+  .celebration-dialog { max-height: calc(100vh - 20px); padding: 29px 18px 20px; border-width: 3px; border-radius: 22px; }
+  .celebration-trophy { width: 86px; height: 86px; font-size: 52px; }
+  .celebration-message { margin-bottom: 16px; font-size: 14px; }
+  .celebration-progress { padding: 12px; }
+  .celebration-progress__heading { align-items: flex-start; font-size: 12px; }
+  .celebration-actions { grid-template-columns: 1fr; }
 }
 
 /* Interactive Cochabamba map */
