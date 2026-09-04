@@ -1,27 +1,11 @@
-'use client'
-
-import React, { useEffect } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const LandingPage = () => {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.prefetch('/mapaProvincia/mitoLeyenda');
-  }, [router]);
-
-  const handleEnter = () => {
-    router.push('/mapaProvincia/mitoLeyenda');
-  };
-
   return (
     <div className="landing-page" style={styles.landingContainer}>
       {/* Elementos decorativos de fondo */}
       <div style={styles.backgroundOverlay}></div>
-      <div style={styles.floatingElement1}></div>
-      <div style={styles.floatingElement2}></div>
-      <div style={styles.floatingElement3}></div>
       
       <div className="landing-content" style={styles.contentWrapper}>
         {/* Hero Section */}
@@ -31,41 +15,30 @@ const LandingPage = () => {
             <span style={styles.heartIcon}>❤️</span>
           </div>
           
-          <h1 style={styles.title}>
+          <h1 className="landing-title" style={styles.title}>
             <span style={styles.titleMain}>Mitos y cuentos</span>
             <span style={styles.titleAccent}>Cochabambinos</span>
           </h1>
           
-          <p style={styles.subtitle}>
+          <p className="landing-subtitle" style={styles.subtitle}>
             ✨ Fomentando la lectura y preservando nuestras tradiciones ✨
           </p>
           
-          <button 
+          <Link
+            href="/mapaProvincia/mitoLeyenda"
+            className="landing-enter-button"
             style={styles.enterButton} 
-            onClick={handleEnter}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#ff6b6b';
-              e.target.style.color = '#fff';
-              e.target.style.transform = 'translateY(-4px) scale(1.05)';
-              e.target.style.boxShadow = '0 15px 35px rgba(255, 107, 107, 0.4), 0 5px 15px rgba(0, 0, 0, 0.2)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
-              e.target.style.color = '#0abdc6';
-              e.target.style.transform = 'translateY(0) scale(1)';
-              e.target.style.boxShadow = '0 8px 25px rgba(255, 255, 255, 0.3), 0 4px 10px rgba(0, 0, 0, 0.1)';
-            }}
           >
             <span style={styles.buttonIcon}>🗺️</span>
             Explorar Mapa
             <span style={styles.buttonArrow}>→</span>
-          </button>
+          </Link>
         </div>
 
         {/* Images Section */}
         <div className="landing-images" style={styles.imageSection}>
           <div style={styles.imageContainer}>
-            <div style={styles.imageWrapper}>
+            <div className="landing-image-frame" style={styles.imageWrapper}>
               <Image
                 src="/images/portada-cultura.webp"
                 alt="Tradiciones cochabambinas - Cultura ancestral"
@@ -74,24 +47,17 @@ const LandingPage = () => {
                 sizes="(max-width: 700px) 100vw, 45vw"
                 priority
                 unoptimized
+                className="landing-cover-image"
                 style={styles.landingImage}
-                onMouseEnter={(e) => {
-                  e.target.style.transform = 'scale(1.05) rotate(1deg)';
-                  e.target.parentElement.style.boxShadow = '0 25px 50px rgba(10, 189, 198, 0.3)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.transform = 'scale(1) rotate(0deg)';
-                  e.target.parentElement.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.2)';
-                }}
               />
-              <div style={styles.imageOverlay}>
+              <div className="landing-image-overlay" style={styles.imageOverlay}>
                 <span style={styles.overlayText}>Cultura Ancestral</span>
               </div>
             </div>
           </div>
 
           <div style={styles.imageContainer}>
-            <div style={styles.imageWrapper}>
+            <div className="landing-image-frame" style={styles.imageWrapper}>
               <Image
                 src="/images/portada-tradiciones.webp"
                 alt="Tradiciones cochabambinas - Patrimonio cultural"
@@ -100,17 +66,10 @@ const LandingPage = () => {
                 sizes="(max-width: 700px) 100vw, 45vw"
                 loading="lazy"
                 unoptimized
+                className="landing-cover-image"
                 style={styles.landingImage}
-                onMouseEnter={(e) => {
-                  e.target.style.transform = 'scale(1.05) rotate(-1deg)';
-                  e.target.parentElement.style.boxShadow = '0 25px 50px rgba(255, 107, 107, 0.3)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.transform = 'scale(1) rotate(0deg)';
-                  e.target.parentElement.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.2)';
-                }}
               />
-              <div style={styles.imageOverlay}>
+              <div className="landing-image-overlay" style={styles.imageOverlay}>
                 <span style={styles.overlayText}>Patrimonio Cultural</span>
               </div>
             </div>
@@ -119,54 +78,27 @@ const LandingPage = () => {
 
         {/* Features Section */}
         <div className="landing-features" style={styles.featuresSection}>
-          <div 
+          <div
+            className="landing-feature-card"
             style={styles.featureCard}
-            onMouseEnter={(e) => {
-              e.target.style.transform = 'translateY(-8px) scale(1.02)';
-              e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.25)';
-              e.target.style.boxShadow = '0 15px 35px rgba(0,0,0,0.2)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.transform = 'translateY(0) scale(1)';
-              e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
-              e.target.style.boxShadow = '0 8px 20px rgba(0,0,0,0.1)';
-            }}
           >
             <span style={styles.featureIcon}>📖</span>
             <h3 style={styles.featureTitle}>Historias Auténticas</h3>
             <p style={styles.featureText}>Descubre los mitos y leyendas tradicionales</p>
           </div>
           
-          <div 
+          <div
+            className="landing-feature-card"
             style={styles.featureCard}
-            onMouseEnter={(e) => {
-              e.target.style.transform = 'translateY(-8px) scale(1.02)';
-              e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.25)';
-              e.target.style.boxShadow = '0 15px 35px rgba(0,0,0,0.2)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.transform = 'translateY(0) scale(1)';
-              e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
-              e.target.style.boxShadow = '0 8px 20px rgba(0,0,0,0.1)';
-            }}
           >
             <span style={styles.featureIcon}>🏔️</span>
             <h3 style={styles.featureTitle}>Cultura Viva</h3>
             <p style={styles.featureText}>Preservamos nuestra rica herencia cultural</p>
           </div>
           
-          <div 
+          <div
+            className="landing-feature-card"
             style={styles.featureCard}
-            onMouseEnter={(e) => {
-              e.target.style.transform = 'translateY(-8px) scale(1.02)';
-              e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.25)';
-              e.target.style.boxShadow = '0 15px 35px rgba(0,0,0,0.2)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.transform = 'translateY(0) scale(1)';
-              e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
-              e.target.style.boxShadow = '0 8px 20px rgba(0,0,0,0.1)';
-            }}
           >
             <span style={styles.featureIcon}>🎓</span>
             <h3 style={styles.featureTitle}>Educación</h3>
@@ -176,7 +108,7 @@ const LandingPage = () => {
       </div>
 
       {/* Credits Section */}
-      <div style={styles.creditsSection}>
+      <div className="landing-credits" style={styles.creditsSection}>
         <p style={styles.creditsText}>
           🎓 Valores, espiritualidad y religiones, Normal de Vacas
         </p>
@@ -210,39 +142,6 @@ const styles = {
     background: 'radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%)',
     pointerEvents: 'none',
   },
-  floatingElement1: {
-    position: 'absolute',
-    top: '10%',
-    left: '10%',
-    width: '100px',
-    height: '100px',
-    background: 'rgba(255,255,255,0.1)',
-    borderRadius: '50%',
-    filter: 'blur(40px)',
-    animation: 'float1 6s ease-in-out infinite',
-  },
-  floatingElement2: {
-    position: 'absolute',
-    top: '60%',
-    right: '15%',
-    width: '150px',
-    height: '150px',
-    background: 'rgba(255,255,255,0.08)',
-    borderRadius: '50%',
-    filter: 'blur(50px)',
-    animation: 'float2 8s ease-in-out infinite',
-  },
-  floatingElement3: {
-    position: 'absolute',
-    bottom: '20%',
-    left: '20%',
-    width: '80px',
-    height: '80px',
-    background: 'rgba(255,255,255,0.12)',
-    borderRadius: '50%',
-    filter: 'blur(30px)',
-    animation: 'float3 7s ease-in-out infinite',
-  },
   contentWrapper: {
     display: 'flex',
     flexDirection: 'column',
@@ -254,7 +153,6 @@ const styles = {
   heroSection: {
     textAlign: 'center',
     marginBottom: '60px',
-    animation: 'fadeInUp 1s ease-out',
   },
   iconContainer: {
     display: 'flex',
@@ -262,15 +160,12 @@ const styles = {
     alignItems: 'center',
     gap: '20px',
     marginBottom: '30px',
-    animation: 'bounceIn 1.5s ease-out',
   },
   bookIcon: {
     fontSize: '48px',
-    animation: 'pulse 2s infinite',
   },
   heartIcon: {
     fontSize: '32px',
-    animation: 'heartbeat 1.5s infinite',
   },
   title: {
     fontSize: '4rem',
@@ -278,7 +173,6 @@ const styles = {
     marginBottom: '20px',
     textShadow: '0 4px 8px rgba(0,0,0,0.3)',
     lineHeight: '1.1',
-    animation: 'slideInDown 1s ease-out 0.3s both',
   },
   titleMain: {
     display: 'block',
@@ -300,7 +194,6 @@ const styles = {
     marginBottom: '40px',
     fontWeight: '300',
     textShadow: '0 2px 4px rgba(0,0,0,0.2)',
-    animation: 'fadeIn 1s ease-out 0.6s both',
     lineHeight: '1.4',
   },
   enterButton: {
@@ -316,13 +209,12 @@ const styles = {
     border: 'none',
     borderRadius: '50px',
     cursor: 'pointer',
-    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    transition: 'transform 0.18s ease, color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease',
     boxShadow: '0 8px 25px rgba(255, 255, 255, 0.3), 0 4px 10px rgba(0, 0, 0, 0.1)',
-    backdropFilter: 'blur(10px)',
-    animation: 'slideInUp 1s ease-out 0.9s both',
     textTransform: 'uppercase',
     letterSpacing: '1px',
     minWidth: '220px',
+    textDecoration: 'none',
   },
   buttonIcon: {
     fontSize: '20px',
@@ -340,17 +232,15 @@ const styles = {
     flexWrap: 'wrap',
   },
   imageContainer: {
-    animation: 'fadeInScale 1s ease-out 1.2s both',
   },
   imageWrapper: {
     position: 'relative',
     borderRadius: '20px',
     overflow: 'hidden',
     boxShadow: '0 15px 30px rgba(0, 0, 0, 0.2)',
-    transition: 'all 0.3s ease',
+    transition: 'box-shadow 0.18s ease',
     background: 'rgba(255, 255, 255, 0.1)',
     padding: '8px',
-    backdropFilter: 'blur(10px)',
   },
   landingImage: {
     width: '320px',
@@ -386,23 +276,19 @@ const styles = {
   },
   featureCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    backdropFilter: 'blur(20px)',
     padding: '30px 20px',
     borderRadius: '20px',
     textAlign: 'center',
     minWidth: '200px',
     maxWidth: '250px',
     border: '1px solid rgba(255, 255, 255, 0.2)',
-    transition: 'all 0.3s ease',
-    animation: 'fadeInUp 1s ease-out 1.5s both',
-    cursor: 'pointer',
+    transition: 'transform 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease',
     boxShadow: '0 8px 20px rgba(0,0,0,0.1)',
   },
   featureIcon: {
     fontSize: '48px',
     display: 'block',
     marginBottom: '16px',
-    animation: 'bounce 2s infinite',
   },
   featureTitle: {
     fontSize: '18px',
@@ -423,7 +309,6 @@ const styles = {
     left: '0',
     right: '0',
     textAlign: 'center',
-    animation: 'fadeIn 1s ease-out 2s both',
   },
   creditsText: {
     fontSize: '14px',
@@ -439,286 +324,5 @@ const styles = {
     margin: 0,
   },
 };
-
-// Add CSS animations and responsive styles
-if (typeof document !== 'undefined') {
-  const styleSheet = document.createElement("style");
-  styleSheet.type = "text/css";
-  styleSheet.innerText = `
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    
-    @keyframes slideInDown {
-      from {
-        opacity: 0;
-        transform: translateY(-50px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    
-    @keyframes slideInUp {
-      from {
-        opacity: 0;
-        transform: translateY(50px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    
-    @keyframes fadeInScale {
-      from {
-        opacity: 0;
-        transform: scale(0.8);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-    
-    @keyframes bounceIn {
-      0% {
-        opacity: 0;
-        transform: scale(0.3);
-      }
-      50% {
-        opacity: 1;
-        transform: scale(1.05);
-      }
-      70% {
-        transform: scale(0.9);
-      }
-      100% {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-    
-    @keyframes pulse {
-      0%, 100% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.1);
-      }
-    }
-    
-    @keyframes heartbeat {
-      0%, 100% {
-        transform: scale(1);
-      }
-      25% {
-        transform: scale(1.1);
-      }
-      50% {
-        transform: scale(1.2);
-      }
-      75% {
-        transform: scale(1.1);
-      }
-    }
-    
-    @keyframes bounce {
-      0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0);
-      }
-      40% {
-        transform: translateY(-10px);
-      }
-      60% {
-        transform: translateY(-5px);
-      }
-    }
-    
-    @keyframes float1 {
-      0%, 100% {
-        transform: translateY(0px) rotate(0deg);
-      }
-      50% {
-        transform: translateY(-20px) rotate(180deg);
-      }
-    }
-    
-    @keyframes float2 {
-      0%, 100% {
-        transform: translateY(0px) rotate(0deg);
-      }
-      50% {
-        transform: translateY(-30px) rotate(-180deg);
-      }
-    }
-    
-    @keyframes float3 {
-      0%, 100% {
-        transform: translateY(0px) rotate(0deg);
-      }
-      50% {
-        transform: translateY(-15px) rotate(90deg);
-      }
-    }
-    
-    /* Hover effects */
-    .imageWrapper:hover .imageOverlay {
-      transform: translateY(0) !important;
-    }
-    
-    /* Responsive Design */
-    @media (max-width: 1024px) {
-      .title {
-        font-size: 3rem !important;
-      }
-      
-      .landingImage {
-        width: 280px !important;
-        height: 210px !important;
-      }
-      
-      .featuresSection {
-        gap: 20px !important;
-      }
-    }
-    
-    @media (max-width: 768px) {
-      .landingContainer {
-        padding: 16px !important;
-      }
-      
-      .title {
-        font-size: 2.5rem !important;
-      }
-      
-      .subtitle {
-        font-size: 1.2rem !important;
-      }
-      
-      .enterButton {
-        font-size: 1.1rem !important;
-        padding: 14px 28px !important;
-        min-width: 200px !important;
-      }
-      
-      .landingImage {
-        width: 250px !important;
-        height: 180px !important;
-      }
-      
-      .imageSection {
-        gap: 20px !important;
-      }
-      
-      .featuresSection {
-        flex-direction: column !important;
-        align-items: center !important;
-      }
-      
-      .featureCard {
-        max-width: 300px !important;
-        width: 100% !important;
-      }
-    }
-    
-    @media (max-width: 640px) {
-      .title {
-        font-size: 2rem !important;
-      }
-      
-      .subtitle {
-        font-size: 1rem !important;
-        padding: 0 20px !important;
-      }
-      
-      .enterButton {
-        font-size: 1rem !important;
-        padding: 12px 24px !important;
-        min-width: 180px !important;
-      }
-      
-      .landingImage {
-        width: 220px !important;
-        height: 160px !important;
-      }
-      
-      .imageSection {
-        flex-direction: column !important;
-        align-items: center !important;
-      }
-      
-      .iconContainer {
-        gap: 15px !important;
-      }
-      
-      .bookIcon {
-        font-size: 36px !important;
-      }
-      
-      .heartIcon {
-        font-size: 24px !important;
-      }
-      
-      .creditsSection {
-        bottom: 10px !important;
-        padding: 0 20px !important;
-      }
-      
-      .creditsText {
-        font-size: 12px !important;
-      }
-      
-      .creditsDeveloper {
-        font-size: 10px !important;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      .heroSection {
-        margin-bottom: 40px !important;
-      }
-      
-      .imageSection {
-        margin-bottom: 40px !important;
-      }
-      
-      .landingImage {
-        width: 200px !important;
-        height: 140px !important;
-      }
-      
-      .featureCard {
-        padding: 20px 16px !important;
-      }
-      
-      .featureIcon {
-        font-size: 36px !important;
-      }
-      
-      .featureTitle {
-        font-size: 16px !important;
-      }
-      
-      .featureText {
-        font-size: 12px !important;
-      }
-    }
-  `;
-  document.head.appendChild(styleSheet);
-}
 
 export default LandingPage;

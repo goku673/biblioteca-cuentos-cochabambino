@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/sideBar';
 import fallbackMap from '@/app/img/mapa.png';
 import { provinceColors } from '@/data/provinceColors';
@@ -31,6 +32,7 @@ const provincePositions = {
 };
 
 const Mapa = () => {
+  const router = useRouter();
   const [activeProvince, setActiveProvince] = useState(
     () => provinceColors.find((province) => province.id === 6) || provinceColors[0]
   );
@@ -50,6 +52,12 @@ const Mapa = () => {
       window.removeEventListener('storage', syncProgress);
     };
   }, []);
+
+  useEffect(() => {
+    if (activeProvince?.id) {
+      router.prefetch(`/mapaProvincia/mitoLeyenda/${activeProvince.id}`);
+    }
+  }, [activeProvince?.id, router]);
 
   const imgcbba = '/images/mapa-cochabamba.webp';
 
@@ -101,54 +109,16 @@ const Mapa = () => {
       borderRadius: '24px',
       overflow: 'hidden',
       boxShadow: '0 25px 50px rgba(0,0,0,0.2), 0 10px 20px rgba(0,0,0,0.1)',
-      animation: 'fadeInScale 0.8s ease-out 0.3s both',
-    },
-    mapGlow: {
-      position: 'absolute',
-      top: '-10px',
-      left: '-10px',
-      right: '-10px',
-      bottom: '-10px',
-      background: 'linear-gradient(45deg, #0abdc6, #ff6b6b, #ffa500, #0abdc6)',
-      borderRadius: '30px',
-      opacity: '0.7',
-      filter: 'blur(20px)',
-      zIndex: '-1',
-      animation: 'rotateGlow 8s linear infinite',
     },
     imageContainer: {
       position: 'relative',
       width: '100%',
       height: '100%',
       backgroundColor: 'rgba(255,255,255,0.95)',
-      backdropFilter: 'blur(10px)',
     },
     mapImage: {
       objectFit: 'contain',
       padding: '12px',
-      transition: 'transform 0.3s ease',
-    },
-    mapTitle: {
-      position: 'absolute',
-      bottom: '0',
-      left: '0',
-      right: '0',
-      background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
-      color: 'white',
-      padding: '30px 20px 20px',
-      textAlign: 'center',
-    },
-    titleText: {
-      fontSize: '24px',
-      fontWeight: 'bold',
-      margin: '0 0 8px 0',
-      textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-    },
-    subtitleText: {
-      fontSize: '16px',
-      margin: '0',
-      opacity: '0.9',
-      textShadow: '0 1px 2px rgba(0,0,0,0.5)',
     },
   };
 
@@ -175,7 +145,6 @@ const Mapa = () => {
             Provincia elegida: <strong>{activeProvince?.province || 'ninguna'}</strong>
           </div>
           <div className="map-canvas" style={styles.mapWrapper}>
-            <div style={styles.mapGlow}></div>
             <div className="map-image" style={styles.imageContainer}>
               <Image 
                 src={imgcbba || "/placeholder.svg"} 

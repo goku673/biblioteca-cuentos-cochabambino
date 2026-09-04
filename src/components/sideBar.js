@@ -1,22 +1,17 @@
 'use client'
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
+import React, { memo } from 'react';
+import Link from 'next/link';
 import { IoHomeSharp } from "react-icons/io5";
 import { TOTAL_PROVINCES } from '@/lib/readingProgress';
 
 const Sidebar = ({ data, activeProvince, onActiveProvince, completedProvinceIds = [] }) => {
-    const router = useRouter();
     const completedSet = new Set(completedProvinceIds);
     const progressPercentage = Math.round((completedSet.size / TOTAL_PROVINCES) * 100);
-    
-    const handleClickGoBack = () => {
-        router.push('/');
-    };
 
     return (
-        <div style={styles.sidebar}>
-            <div style={styles.header}>
+        <aside className="province-sidebar" style={styles.sidebar}>
+            <div className="province-sidebar__header" style={styles.header}>
                 <h1 style={styles.sidebarTitle}>🗺️ Provincias</h1>
                 <div style={styles.titleUnderline}></div>
                 <div className="journey-progress" aria-label={`${completedSet.size} de ${TOTAL_PROVINCES} provincias completadas`}>
@@ -31,91 +26,56 @@ const Sidebar = ({ data, activeProvince, onActiveProvince, completedProvinceIds 
                 </div>
             </div>
             
-            <div style={styles.scrollContainer}>
+            <div className="province-sidebar__scroll" style={styles.scrollContainer}>
                 <ul style={styles.provinceList}>
-                    {data.map((prov, index) => (
-                        <li 
-                            key={prov.id} 
-                            className={activeProvince?.id === prov.id ? 'province-nav-item is-active' : 'province-nav-item'}
-                            style={{
-                                ...styles.provinceItem,
-                                ...(activeProvince?.id === prov.id ? styles.provinceItemActive : {}),
-                                animationDelay: `${index * 0.1}s`
-                            }}
-                            onMouseEnterCapture={() => onActiveProvince?.(prov)}
-                            onFocusCapture={() => onActiveProvince?.(prov)}
-                            onTouchStart={() => onActiveProvince?.(prov)}
-                        >
+                    {data.map((prov) => (
+                        <li key={prov.id} style={styles.provinceListItem}>
                             <button
                                 type="button"
+                                className={activeProvince?.id === prov.id ? 'province-nav-item is-active' : 'province-nav-item'}
                                 aria-pressed={activeProvince?.id === prov.id}
                                 onClick={() => onActiveProvince?.(prov)}
-                                style={styles.sidebarLink}
+                                onFocus={() => onActiveProvince?.(prov)}
+                                onPointerEnter={(event) => {
+                                    if (event.pointerType === 'mouse') onActiveProvince?.(prov);
+                                }}
+                                style={{
+                                    ...styles.provinceItem,
+                                    ...(activeProvince?.id === prov.id ? styles.provinceItemActive : {}),
+                                }}
                             >
                                 <span style={styles.provinceName}>{prov.province}</span>
+                                <span style={styles.colorBar} aria-hidden="true">
+                                    {completedSet.has(prov.id) && (
+                                        <span className="province-completed-star" title="Cuento completado">★</span>
+                                    )}
+                                    {prov.colors.map((color, colorIndex) => (
+                                        <span
+                                            key={colorIndex}
+                                            className="province-color-swatch"
+                                            style={{ ...styles.colorSquare, backgroundColor: color }}
+                                        />
+                                    ))}
+                                </span>
                             </button>
-                            <div style={styles.colorBar}>
-                                {completedSet.has(prov.id) && (
-                                    <span className="province-completed-star" title="Cuento completado" aria-label="Cuento completado">★</span>
-                                )}
-                                {prov.colors.map((color, colorIndex) => (
-                                    <div
-                                        key={colorIndex}
-                                        style={{
-                                            ...styles.colorSquare,
-                                            backgroundColor: color,
-                                            animationDelay: `${(index * 0.1) + (colorIndex * 0.05)}s`
-                                        }}
-                                        title={`Color: ${color}`}
-                                        onMouseEnter={(e) => {
-                                            e.target.style.transform = 'scale(1.4) rotate(45deg)';
-                                            e.target.style.boxShadow = `0 6px 16px ${color}60`;
-                                            e.target.style.zIndex = '10';
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.target.style.transform = 'scale(1) rotate(0deg)';
-                                            e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-                                            e.target.style.zIndex = '1';
-                                        }}
-                                    />
-                                ))}
-                            </div>
                         </li>
                     ))}
                 </ul>
             </div>
             
-            <div style={styles.buttonGoBackContainer}>
-                <button 
-                    style={styles.buttonGoBack} 
-                    onClick={handleClickGoBack}
-                    onMouseEnter={(e) => {
-                        e.target.style.backgroundColor = '#ff6b6b';
-                        e.target.style.transform = 'translateY(-4px) scale(1.05)';
-                        e.target.style.boxShadow = '0 8px 25px rgba(255, 107, 107, 0.4)';
-                        const icon = e.target.querySelector('svg');
-                        if (icon) icon.style.transform = 'rotate(-10deg) scale(1.1)';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.target.style.backgroundColor = '#0abdc6';
-                        e.target.style.transform = 'translateY(0) scale(1)';
-                        e.target.style.boxShadow = '0 4px 15px rgba(10, 189, 198, 0.3)';
-                        const icon = e.target.querySelector('svg');
-                        if (icon) icon.style.transform = 'rotate(0deg) scale(1)';
-                    }}
-                >
+            <div className="province-sidebar__footer" style={styles.buttonGoBackContainer}>
+                <Link href="/" className="sidebar-home-button" style={styles.buttonGoBack}>
                     <IoHomeSharp size={24} style={styles.homeIcon} />
                     <span style={styles.buttonText}>Inicio</span>
-                </button>
+                </Link>
             </div>
-        </div>
+        </aside>
     );
 };
 
 const styles = {
     sidebar: {
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        backdropFilter: 'blur(20px)',
+        backgroundColor: 'rgba(255, 255, 255, 0.98)',
         padding: '24px',
         borderRadius: '20px',
         boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15), 0 8px 16px rgba(0, 0, 0, 0.1)',
@@ -128,7 +88,6 @@ const styles = {
         border: '1px solid rgba(255, 255, 255, 0.3)',
         position: 'relative',
         overflow: 'hidden',
-        animation: 'slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
     },
     header: {
         textAlign: 'center',
@@ -141,7 +100,6 @@ const styles = {
         margin: '0 0 12px 0',
         color: '#0abdc6',
         textShadow: '0 2px 4px rgba(10, 189, 198, 0.2)',
-        animation: 'fadeInDown 0.8s ease-out',
         letterSpacing: '0.5px',
     },
     titleUnderline: {
@@ -150,7 +108,6 @@ const styles = {
         background: 'linear-gradient(90deg, #0abdc6, #ff6b6b, #ffa500)',
         margin: '0 auto',
         borderRadius: '2px',
-        animation: 'expandWidth 1s ease-out 0.5s both',
     },
     scrollContainer: {
         flex: '1',
@@ -160,40 +117,42 @@ const styles = {
         marginRight: '-8px',
         scrollbarWidth: 'thin',
         scrollbarColor: '#0abdc6 rgba(0,0,0,0.1)',
+        overscrollBehavior: 'contain',
+        WebkitOverflowScrolling: 'touch',
     },
     provinceList: {
         listStyle: 'none',
         padding: '0',
         margin: '0',
     },
+    provinceListItem: {
+        marginBottom: '8px',
+    },
     provinceItem: {
+        width: '100%',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '14px 16px',
-        marginBottom: '8px',
         borderRadius: '12px',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        transition: 'transform 0.16s ease, background-color 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease',
         borderLeft: '4px solid transparent',
+        borderTop: 'none',
+        borderRight: 'none',
+        borderBottom: 'none',
         position: 'relative',
-        animation: 'fadeInUp 0.6s ease-out both',
         cursor: 'pointer',
+        backgroundColor: 'transparent',
+        font: 'inherit',
+        textAlign: 'left',
+        touchAction: 'manipulation',
+        WebkitTapHighlightColor: 'transparent',
     },
     provinceItemActive: {
         transform: 'translateX(8px)',
         backgroundColor: 'rgba(10, 127, 140, 0.1)',
         borderLeft: '4px solid #087f8c',
         boxShadow: '0 4px 14px rgba(8, 127, 140, 0.16)',
-    },
-    sidebarLink: {
-        flex: '1',
-        marginRight: '16px',
-        padding: '8px 0',
-        border: 'none',
-        background: 'transparent',
-        textAlign: 'left',
-        font: 'inherit',
-        cursor: 'pointer',
     },
     provinceName: {
         color: '#0abdc6',
@@ -207,17 +166,16 @@ const styles = {
         display: 'flex',
         gap: '6px',
         alignItems: 'center',
+        marginLeft: '12px',
+        pointerEvents: 'none',
     },
     colorSquare: {
         width: '18px',
         height: '18px',
         borderRadius: '6px',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        transition: 'transform 0.16s ease, box-shadow 0.16s ease',
         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        cursor: 'pointer',
-        animation: 'popIn 0.6s ease-out both',
         border: '2px solid rgba(255,255,255,0.8)',
-        position: 'relative',
     },
     buttonGoBackContainer: {
         display: 'flex',
@@ -239,13 +197,15 @@ const styles = {
         fontSize: '16px',
         fontWeight: 'bold',
         cursor: 'pointer',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        transition: 'transform 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease',
         boxShadow: '0 4px 15px rgba(10, 189, 198, 0.3)',
         position: 'relative',
         overflow: 'hidden',
         minWidth: '140px',
         textTransform: 'uppercase',
         letterSpacing: '0.5px',
+        textDecoration: 'none',
+        touchAction: 'manipulation',
     },
     homeIcon: {
         transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -256,175 +216,4 @@ const styles = {
     },
 };
 
-// Add CSS animations and responsive styles
-if (typeof document !== 'undefined') {
-    const styleSheet = document.createElement("style");
-    styleSheet.type = "text/css";
-    styleSheet.innerText = `
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-100px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        @keyframes expandWidth {
-            from {
-                width: 0;
-                opacity: 0;
-            }
-            to {
-                width: 80px;
-                opacity: 1;
-            }
-        }
-        
-        @keyframes popIn {
-            from {
-                opacity: 0;
-                transform: scale(0) rotate(180deg);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) rotate(0deg);
-            }
-        }
-        
-        /* Custom scrollbar */
-        .sidebar::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        .sidebar::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.05);
-            border-radius: 4px;
-        }
-        
-        .sidebar::-webkit-scrollbar-thumb {
-            background: linear-gradient(45deg, #0abdc6, #ff6b6b);
-            border-radius: 4px;
-            transition: background 0.3s ease;
-        }
-        
-        .sidebar::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(45deg, #ff6b6b, #ffa500);
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .sidebar {
-                width: 280px !important;
-                margin-right: 20px !important;
-                padding: 20px !important;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100% !important;
-                margin-right: 0 !important;
-                margin-bottom: 20px !important;
-                max-height: 50vh !important;
-                border-radius: 16px !important;
-            }
-            
-            .provinceItem {
-                padding: 12px 14px !important;
-            }
-            
-            .sidebarTitle {
-                font-size: 20px !important;
-            }
-            
-            .buttonGoBack {
-                padding: 12px 24px !important;
-                min-width: 120px !important;
-            }
-        }
-        
-        @media (max-width: 640px) {
-            .sidebar {
-                padding: 16px !important;
-                max-height: 45vh !important;
-            }
-            
-            .colorSquare {
-                width: 14px !important;
-                height: 14px !important;
-            }
-            
-            .provinceName {
-                font-size: 14px !important;
-            }
-            
-            .buttonText {
-                font-size: 12px !important;
-            }
-        }
-        
-        /* Hover effects for better UX */
-        .sidebar::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, #0abdc6, #ff6b6b, #ffa500, #0abdc6);
-            border-radius: 22px;
-            opacity: 0;
-            z-index: -1;
-            transition: opacity 0.3s ease;
-        }
-        
-        .sidebar:hover::before {
-            opacity: 0.1;
-        }
-        
-        /* Pulse animation for button */
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 4px 15px rgba(10, 189, 198, 0.3);
-            }
-            50% {
-                box-shadow: 0 4px 25px rgba(10, 189, 198, 0.5);
-            }
-            100% {
-                box-shadow: 0 4px 15px rgba(10, 189, 198, 0.3);
-            }
-        }
-        
-        .buttonGoBack {
-            animation: pulse 2s infinite;
-        }
-    `;
-    document.head.appendChild(styleSheet);
-}
-
-export default Sidebar;
+export default memo(Sidebar);

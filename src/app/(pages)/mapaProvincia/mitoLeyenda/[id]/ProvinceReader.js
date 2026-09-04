@@ -2,21 +2,16 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { IoArrowBackSharp } from "react-icons/io5";
 import { completeProvince, getCompletedProvinceIds } from '@/lib/readingProgress';
 
 const ProvinceReader = ({ dataProvinceId }) => {
-    const router = useRouter();
     const id = dataProvinceId.id;
     const [isQuechua, setIsQuechua] = useState(false);
     const [questions, setQuestions] = useState(false);
     const [isCompleted, setIsCompleted] = useState(false);
     const [showCelebration, setShowCelebration] = useState(false);
-
-    const handleClickGoBack = () => {
-        router.push('/mapaProvincia/mitoLeyenda');
-    };
 
     useEffect(() => {
         setQuestions(false);
@@ -25,11 +20,11 @@ const ProvinceReader = ({ dataProvinceId }) => {
     }, [id]);
 
     const toggleLanguage = () => {
-        setIsQuechua(!isQuechua);
+        setIsQuechua((currentLanguage) => !currentLanguage);
     }
 
     const handleQuestion = () => {
-        setQuestions(!questions);
+        setQuestions((areQuestionsVisible) => !areQuestionsVisible);
     }
 
     const handleCompleteActivity = () => {
@@ -46,34 +41,18 @@ const ProvinceReader = ({ dataProvinceId }) => {
                     <div className="province-copy" style={styles.contentWrapper}>
                         {/* Language Switch */}
                         <div className="province-toolbar" style={styles.languageSwitch}>
-                            <button 
-                                onClick={handleClickGoBack}
+                            <Link
+                                href="/mapaProvincia/mitoLeyenda"
+                                className="reader-back-button"
                                 style={styles.buttonGoBack}
-                                onMouseEnter={(e) => {
-                                    e.target.style.backgroundColor = '#ff6b6b';
-                                    e.target.style.transform = 'translateY(-4px)';
-                                    e.target.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.target.style.backgroundColor = '#0abdc6';
-                                    e.target.style.transform = 'translateY(0)';
-                                    e.target.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
-                                }}
                             >
                                 <IoArrowBackSharp size={24} style={styles.buttonIcon} />
                                 Regresar
-                            </button>
+                            </Link>
                             <button 
                                 onClick={toggleLanguage}
+                                className="reader-language-button"
                                 style={styles.languageButton}
-                                onMouseEnter={(e) => {
-                                    e.target.style.backgroundColor = 'rgba(255,255,255,0.3)';
-                                    e.target.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.target.style.backgroundColor = 'rgba(255,255,255,0.2)';
-                                    e.target.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
-                                }}
                             >
                                 {isQuechua ? '🇪🇸 Español' : '🏔️ Quechua'}
                             </button>
@@ -91,17 +70,8 @@ const ProvinceReader = ({ dataProvinceId }) => {
                                 <button 
                                     onClick={handleQuestion}
                                     aria-expanded={questions}
+                                    className="reader-question-button reader-question-button--quechua"
                                     style={styles.questionButton}
-                                    onMouseEnter={(e) => {
-                                        e.target.style.backgroundColor = '#b45309';
-                                        e.target.style.transform = 'translateY(-2px)';
-                                        e.target.style.boxShadow = '0 8px 20px rgba(180,83,9,0.3)';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.target.style.backgroundColor = '#d97706';
-                                        e.target.style.transform = 'translateY(0)';
-                                        e.target.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
-                                    }}
                                 >
                                     {questions ? '🙈 Tapuykunata pakay' : '🤔 Tapuykunata qhaway'}
                                 </button>
@@ -111,18 +81,8 @@ const ProvinceReader = ({ dataProvinceId }) => {
                                         {dataProvinceId.questionsQuechua.map((question, index) => (
                                             <div 
                                                 key={index} 
-                                                style={{
-                                                    ...styles.questionItem,
-                                                    animationDelay: `${index * 0.1}s`
-                                                }}
-                                                onMouseEnter={(e) => {
-                                                    e.target.style.transform = 'translateY(-2px)';
-                                                    e.target.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                    e.target.style.transform = 'translateY(0)';
-                                                    e.target.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
-                                                }}
+                                                className="reader-question-card"
+                                                style={styles.questionItem}
                                             >
                                                 <p style={styles.questionTextQuechua}>
                                                     <span style={styles.questionNumber}>{index + 1}</span>
@@ -144,17 +104,8 @@ const ProvinceReader = ({ dataProvinceId }) => {
                                 <button 
                                     onClick={handleQuestion}
                                     aria-expanded={questions}
+                                    className="reader-question-button reader-question-button--spanish"
                                     style={styles.questionButtonSpanish}
-                                    onMouseEnter={(e) => {
-                                        e.target.style.backgroundColor = '#ff6b6b';
-                                        e.target.style.transform = 'translateY(-2px)';
-                                        e.target.style.boxShadow = '0 8px 20px rgba(255,107,107,0.3)';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.target.style.backgroundColor = '#0abdc6';
-                                        e.target.style.transform = 'translateY(0)';
-                                        e.target.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
-                                    }}
                                 >
                                     {questions ? '🙈 Ocultar preguntas' : '📚 Ver preguntas de comprensión'}
                                 </button>
@@ -164,18 +115,8 @@ const ProvinceReader = ({ dataProvinceId }) => {
                                         {dataProvinceId.questions.map((question, index) => (
                                             <div 
                                                 key={index} 
-                                                style={{
-                                                    ...styles.questionItemSpanish,
-                                                    animationDelay: `${index * 0.1}s`
-                                                }}
-                                                onMouseEnter={(e) => {
-                                                    e.target.style.transform = 'translateY(-2px)';
-                                                    e.target.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                    e.target.style.transform = 'translateY(0)';
-                                                    e.target.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
-                                                }}
+                                                className="reader-question-card"
+                                                style={styles.questionItemSpanish}
                                             >
                                                 <p style={styles.questionTextSpanish}>
                                                     <span style={styles.questionNumberSpanish}>{index + 1}</span>
@@ -230,13 +171,8 @@ const ProvinceReader = ({ dataProvinceId }) => {
                                     sizes="(max-width: 800px) 100vw, 42vw"
                                     priority
                                     unoptimized
+                                    className="reader-province-image"
                                     style={styles.provinceImage}
-                                    onMouseEnter={(e) => {
-                                        e.target.style.transform = 'scale(1.05)';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.target.style.transform = 'scale(1)';
-                                    }}
                                 />
                             </div>
                         </div>
@@ -248,33 +184,6 @@ const ProvinceReader = ({ dataProvinceId }) => {
 };
 
 const styles = {
-    // Loading styles
-    loadingContainer: {
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #0abdc6 0%, #ff6b6b 50%, #ffa500 100%)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    loadingContent: {
-        textAlign: 'center',
-        color: 'white',
-    },
-    spinner: {
-        width: '48px',
-        height: '48px',
-        border: '4px solid rgba(255,255,255,0.3)',
-        borderTop: '4px solid white',
-        borderRadius: '50%',
-        animation: 'spin 1s linear infinite',
-        margin: '0 auto 16px',
-    },
-    loadingText: {
-        fontSize: '18px',
-        fontWeight: '600',
-        margin: 0,
-    },
-
     // Main container styles
     mainContainer: {
         minHeight: '100vh',
@@ -292,9 +201,6 @@ const styles = {
         alignItems: 'flex-start',
         justifyContent: 'space-between',
         gap: '32px',
-        '@media (max-width: 1024px)': {
-            flexDirection: 'column',
-        },
     },
 
     // Content wrapper
@@ -312,10 +218,6 @@ const styles = {
         justifyContent: 'space-between',
         alignItems: 'center',
         gap: '16px',
-        '@media (max-width: 640px)': {
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-        },
     },
     buttonGoBack: {
         display: 'flex',
@@ -328,8 +230,9 @@ const styles = {
         borderRadius: '12px',
         fontSize: '16px',
         cursor: 'pointer',
-        transition: 'all 0.3s ease',
+        transition: 'transform 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease',
         boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
+        textDecoration: 'none',
     },
     buttonIcon: {
         marginRight: '8px',
@@ -337,7 +240,6 @@ const styles = {
     },
     languageButton: {
         backgroundColor: 'rgba(255,255,255,0.2)',
-        backdropFilter: 'blur(10px)',
         color: 'white',
         fontWeight: 'bold',
         padding: '12px 16px',
@@ -345,7 +247,7 @@ const styles = {
         borderRadius: '12px',
         fontSize: '16px',
         cursor: 'pointer',
-        transition: 'all 0.3s ease',
+        transition: 'background-color 0.18s ease, box-shadow 0.18s ease',
         boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
     },
 
@@ -381,7 +283,7 @@ const styles = {
         borderRadius: '12px',
         fontSize: '16px',
         cursor: 'pointer',
-        transition: 'all 0.3s ease',
+        transition: 'transform 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease',
         marginBottom: '24px',
         boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
     },
@@ -418,7 +320,7 @@ const styles = {
         borderRadius: '12px',
         fontSize: '16px',
         cursor: 'pointer',
-        transition: 'all 0.3s ease',
+        transition: 'transform 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease',
         marginBottom: '24px',
         boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
     },
@@ -447,23 +349,21 @@ const styles = {
         marginBottom: '8px',
     },
     questionItem: {
-        backgroundColor: 'rgba(255,255,255,0.8)',
-        backdropFilter: 'blur(10px)',
+        backgroundColor: '#fffdf7',
         padding: '16px',
         borderRadius: '12px',
         boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
         border: '1px solid #f59e0b',
-        transition: 'all 0.3s ease',
+        transition: 'transform 0.18s ease, box-shadow 0.18s ease',
         animation: 'fadeIn 0.5s ease-out',
     },
     questionItemSpanish: {
-        backgroundColor: 'rgba(248,250,252,0.8)',
-        backdropFilter: 'blur(10px)',
+        backgroundColor: '#f8fafc',
         padding: '16px',
         borderRadius: '12px',
         boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
         border: '1px solid #e2e8f0',
-        transition: 'all 0.3s ease',
+        transition: 'transform 0.18s ease, box-shadow 0.18s ease',
         animation: 'fadeIn 0.5s ease-out',
     },
     questionTextQuechua: {
